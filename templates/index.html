@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Crop Recommendation System</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="background-decorations">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="badge">🌱 AI-Powered Agriculture</div>
+            <h1>Smart Crop Recommendation</h1>
+            <p class="subtitle">Enter your soil and climate metrics below to predict the optimal crop for maximum yield.</p>
+        </header>
+
+        <!-- Quick Sample Presets -->
+        <div class="presets-card">
+            <span class="preset-title">💡 Quick Test Presets:</span>
+            <div class="preset-buttons">
+                <button type="button" class="preset-btn" onclick="fillPreset(90, 42, 43, 20.88, 82.0, 6.5, 202.9)">🌾 Rice</button>
+                <button type="button" class="preset-btn" onclick="fillPreset(107, 21, 31, 26.54, 80.3, 6.78, 173.9)">☕ Coffee</button>
+                <button type="button" class="preset-btn" onclick="fillPreset(78, 42, 19, 23.4, 65.0, 6.2, 85.0)">🌽 Maize</button>
+                <button type="button" class="preset-btn" onclick="fillPreset(21, 134, 197, 23.8, 92.4, 6.1, 110.2)">🍎 Apple</button>
+                <button type="button" class="preset-btn" onclick="fillPreset(117, 46, 20, 24.3, 79.9, 6.9, 79.8)">☁️ Cotton</button>
+            </div>
+        </div>
+
+        <!-- Main Form Card -->
+        <div class="card form-card">
+            <form id="predictionForm" method="POST" action="/predict">
+                <div class="form-grid">
+                    <!-- Nitrogen -->
+                    <div class="form-group">
+                        <label for="N">
+                            <span class="label-icon">🧪</span>
+                            <span class="label-text">Nitrogen (N)</span>
+                            <span class="unit">ratio</span>
+                        </label>
+                        <input type="number" step="any" id="N" name="N" required 
+                               placeholder="e.g. 90" 
+                               value="{{ inputs.N if inputs else '' }}">
+                        <span class="hint">Soil Nitrogen content (0 - 140)</span>
+                    </div>
+
+                    <!-- Phosphorus -->
+                    <div class="form-group">
+                        <label for="P">
+                            <span class="label-icon">🔬</span>
+                            <span class="label-text">Phosphorus (P)</span>
+                            <span class="unit">ratio</span>
+                        </label>
+                        <input type="number" step="any" id="P" name="P" required 
+                               placeholder="e.g. 42" 
+                               value="{{ inputs.P if inputs else '' }}">
+                        <span class="hint">Soil Phosphorus content (5 - 145)</span>
+                    </div>
+
+                    <!-- Potassium -->
+                    <div class="form-group">
+                        <label for="K">
+                            <span class="label-icon">⚗️</span>
+                            <span class="label-text">Potassium (K)</span>
+                            <span class="unit">ratio</span>
+                        </label>
+                        <input type="number" step="any" id="K" name="K" required 
+                               placeholder="e.g. 43" 
+                               value="{{ inputs.K if inputs else '' }}">
+                        <span class="hint">Soil Potassium content (5 - 205)</span>
+                    </div>
+
+                    <!-- Temperature -->
+                    <div class="form-group">
+                        <label for="temperature">
+                            <span class="label-icon">🌡️</span>
+                            <span class="label-text">Temperature</span>
+                            <span class="unit">°C</span>
+                        </label>
+                        <input type="number" step="any" id="temperature" name="temperature" required 
+                               placeholder="e.g. 25.5" 
+                               value="{{ inputs.temperature if inputs else '' }}">
+                        <span class="hint">Ambient temperature (8°C - 45°C)</span>
+                    </div>
+
+                    <!-- Humidity -->
+                    <div class="form-group">
+                        <label for="humidity">
+                            <span class="label-icon">💧</span>
+                            <span class="label-text">Humidity</span>
+                            <span class="unit">%</span>
+                        </label>
+                        <input type="number" step="any" id="humidity" name="humidity" required 
+                               placeholder="e.g. 80.0" 
+                               value="{{ inputs.humidity if inputs else '' }}">
+                        <span class="hint">Relative humidity in air (14% - 100%)</span>
+                    </div>
+
+                    <!-- pH -->
+                    <div class="form-group">
+                        <label for="ph">
+                            <span class="label-icon">📊</span>
+                            <span class="label-text">Soil pH</span>
+                            <span class="unit">pH</span>
+                        </label>
+                        <input type="number" step="any" id="ph" name="ph" required 
+                               placeholder="e.g. 6.5" 
+                               value="{{ inputs.ph if inputs else '' }}">
+                        <span class="hint">Soil acidity / alkalinity (3.5 - 9.9)</span>
+                    </div>
+
+                    <!-- Rainfall -->
+                    <div class="form-group full-width">
+                        <label for="rainfall">
+                            <span class="label-icon">🌧️</span>
+                            <span class="label-text">Rainfall</span>
+                            <span class="unit">mm</span>
+                        </label>
+                        <input type="number" step="any" id="rainfall" name="rainfall" required 
+                               placeholder="e.g. 202.9" 
+                               value="{{ inputs.rainfall if inputs else '' }}">
+                        <span class="hint">Expected annual rainfall (20mm - 300mm)</span>
+                    </div>
+                </div>
+
+                <div class="button-row">
+                    <button type="submit" id="predictBtn" class="btn btn-primary">
+                        <span class="btn-text">🌾 Predict Recommended Crop</span>
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                        Clear Form
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Result Section -->
+        {% if prediction %}
+        <div id="resultCard" class="card result-card animate-slide-up">
+            <div class="result-header">
+                <span class="result-badge">✨ Optimal Crop Selected</span>
+                <span class="result-emoji">{{ prediction.emoji }}</span>
+                <h2 class="result-title">{{ prediction.name }}</h2>
+                <p class="result-desc">{{ prediction.desc }}</p>
+            </div>
+
+            {% if top_recommendations %}
+            <div class="alternatives-section">
+                <h3>Top Recommendations & Confidence:</h3>
+                <div class="confidence-list">
+                    {% for item in top_recommendations %}
+                    <div class="confidence-item">
+                        <div class="item-info">
+                            <span class="item-name">{{ item.emoji }} {{ item.name }}</span>
+                            <span class="item-pct">{{ item.confidence }}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ item.confidence }}%;"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% if error %}
+        <div class="card error-card">
+            <span class="error-icon">⚠️</span>
+            <p>{{ error }}</p>
+        </div>
+        {% endif %}
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Trained with <strong>Random Forest Classifier</strong> (99.3% Accuracy) on 2,200 Agricultural Soil & Climate Samples.</p>
+        </footer>
+    </div>
+
+    <script>
+        function fillPreset(n, p, k, temp, hum, ph, rain) {
+            document.getElementById('N').value = n;
+            document.getElementById('P').value = p;
+            document.getElementById('K').value = k;
+            document.getElementById('temperature').value = temp;
+            document.getElementById('humidity').value = hum;
+            document.getElementById('ph').value = ph;
+            document.getElementById('rainfall').value = rain;
+
+            // Optional subtle visual feedback
+            const formCard = document.querySelector('.form-card');
+            formCard.classList.add('pulse');
+            setTimeout(() => formCard.classList.remove('pulse'), 400);
+        }
+
+        function resetForm() {
+            document.getElementById('predictionForm').reset();
+            const resultCard = document.getElementById('resultCard');
+            if (resultCard) {
+                resultCard.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
